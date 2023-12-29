@@ -1,4 +1,4 @@
-namespace JHI.Core.DomainDrivenDesign.Shared.Interfaces
+namespace DomainDrivenDesign.Shared.Interfaces
 {
     public interface IAuditInfo
     {
