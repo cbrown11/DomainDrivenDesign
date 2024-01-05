@@ -1,4 +1,4 @@
-# DomainDrivenDesign
+# Domain Driven Design (DDD)
 This library gives a template and interfaces for Domain Drive Design.
 
 CQRS can be used without event sourcing or DDD, just as these concepts work without CQRS. However there is no denying that three concepts complement each other.
