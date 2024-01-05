@@ -24,6 +24,19 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    #Install and calculate the new version with GitVersion  
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: 5.x
+    - name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      id: gitversion # step id used as reference for output values
+    - name: Display GitVersion outputs
+      run: |
+        echo "Version: ${{ steps.gitversion.outputs.SemVer }}"
+        echo "CommitsSinceVersionSource: ${{ steps.gitversion.outputs.CommitsSinceVersionSource }}"
+
    #Build/pack the project
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -36,7 +49,7 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal 
     - name: Pack
-      run: dotnet pack DomainDrivenDesign.csproj -c Release
+      run: dotnet pack DomainDrivenDesign.csproj -p:Version='${{ steps.gitversion.outputs.SemVer }}' -c Release
     - name: Upload NuGet package to GitHub
       uses: actions/upload-artifact@v2
       with:
@@ -59,3 +72,21 @@ jobs:
     - name: Push package to GitHub package
       if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change  
       run: dotnet nuget push nugetPackage/**/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"   
+
+    #Create release
+    - name: Create Release
+      if: 1 == 0 #needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+        tag_name: ${{ needs.build.outputs.Version }}
+        release_name: Release ${{ needs.build.outputs.Version }}
+    - name: Create Release
+      if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change
+      uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ needs.build.outputs.Version }}
+        name: Release ${{ needs.build.outputs.Version }}
+        artifacts: "nugetPackage/*"
+        token: ${{ secrets.GITHUB_TOKEN }}      
