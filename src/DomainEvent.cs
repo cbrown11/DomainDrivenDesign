@@ -1,4 +1,4 @@
-namespace DomainDrivenDesign.DDD
+namespace DomainDrivenDesign
 {
     using DomainDrivenDesign.Interfaces;
     using DomainDrivenDesign.Serializer;
