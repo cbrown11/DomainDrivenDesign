@@ -41,6 +41,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: nugetPackage
-        path: DomainDrivenDesign/bin/Release/       
+        path: src/bin/Release/       
     - name: Push package to GitHub package
-      run: dotnet  push "DomainDrivenDesign/DomainDrivenDesign/bin/Release/DomainDrivenDesign.1.0.0.nupkg" --source "github"   
+      run: dotnet  push "src/bin/Release/DomainDrivenDesign.1.0.0.nupkg" --source "github"   
