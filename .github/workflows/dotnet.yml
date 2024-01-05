@@ -56,4 +56,4 @@ jobs:
         name: nugetPackage              
     - name: Push package to GitHub package
      # if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change  
-      run: dotnet push nugetPackage/**/*.nupkg --source "github"   
+      run: dotnet nuget push nugetPackage/**/*.nupkg --source "github"   
