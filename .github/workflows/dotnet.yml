@@ -33,4 +33,5 @@ jobs:
       run: dotnet test --no-build --verbosity normal 
     - name: Pack
       run: dotnet pack DomainDrivenDesign.csproj -c Release
-    
+    - name: Push package to GitHub package
+      run: dotnet  push "bin/Release/DomainDrivenDesign.1.0.0.nupkg" --source "github"   
