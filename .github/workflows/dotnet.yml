@@ -36,11 +36,11 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal 
     - name: Pack
-      run: dotnet pack DomainDrivenDesign/DomainDrivenDesign.csproj -c Release
+      run: dotnet pack DomainDrivenDesign.csproj -c Release
     - name: Upload NuGet package to GitHub
       uses: actions/upload-artifact@v2
       with:
         name: nugetPackage
-        path: src/DomainDrivenDesign/bin/Release/       
+        path: DomainDrivenDesign/bin/Release/       
     - name: Push package to GitHub package
       run: dotnet  push "DomainDrivenDesign/DomainDrivenDesign/bin/Release/DomainDrivenDesign.1.0.0.nupkg" --source "github"   
