@@ -1,9 +1,9 @@
-namespace JHI.Core.DomainDrivenDesign.DDD
+namespace DomainDrivenDesign.DDD
 {
-    using JHI.Core.DomainDrivenDesign.DDD.Interfaces;
-    using JHI.Core.DomainDrivenDesign.Serializer;
-    using JHI.Core.DomainDrivenDesign.Shared;
-    using JHI.Core.DomainDrivenDesign.Shared.Interfaces;
+    using DomainDrivenDesign.DDD.Interfaces;
+    using DomainDrivenDesign.Serializer;
+    using DomainDrivenDesign.Shared;
+    using DomainDrivenDesign.Shared.Interfaces;
 
     using Newtonsoft.Json;
 

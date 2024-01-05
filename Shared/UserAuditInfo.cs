@@ -1,6 +1,8 @@
-namespace JHI.Core.DomainDrivenDesign.Shared
+using DomainDrivenDesign.Shared;
+using DomainDrivenDesign.Shared.Interfaces;
+
+namespace DomainDrivenDesign.Shared
 {
-    using JHI.Core.DomainDrivenDesign.Shared.Interfaces;
 
     public class UserAuditInfo : AuditInfo, IAuditInfo
     {

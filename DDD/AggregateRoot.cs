@@ -1,7 +1,7 @@
 // Copyright (c) Janus Henderson Investors. All rights reserved.
-namespace JHI.Core.DomainDrivenDesign.DDD
+namespace DomainDrivenDesign.DDD
 {
-    using JHI.Core.DomainDrivenDesign.DDD.Interfaces;
+    using DomainDrivenDesign.DDD.Interfaces;
 
 
     public abstract class AggregateRoot : IAggregate

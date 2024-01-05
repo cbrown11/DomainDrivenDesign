@@ -1,6 +1,6 @@
-using JHI.Core.DomainDrivenDesign.Shared.Interfaces;
+using DomainDrivenDesign.Shared.Interfaces;
 
-namespace JHI.Core.DomainDrivenDesign.DDD.Interfaces
+namespace DomainDrivenDesign.DDD.Interfaces
 {
     public interface IDomainEvent : IEvent
     {

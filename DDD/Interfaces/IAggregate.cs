@@ -1,3 +1,5 @@
+using DomainDrivenDesign.DDD.Interfaces;
+
 namespace DomainDrivenDesign.DDD.Interfaces
 
 {
