@@ -54,7 +54,7 @@ jobs:
       uses: actions/download-artifact@v1.0.0
       with:
         name: nugetPackage  
-     - name: Prep packages
+    - name: Prep packages
       run: dotnet nuget add source --username cbrown11 --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/cbrown11/index.json"                   
     - name: Push package to GitHub package
      # if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change  
