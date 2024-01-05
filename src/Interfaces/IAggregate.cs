@@ -1,6 +1,6 @@
-using DomainDrivenDesign.DDD.Interfaces;
+using DomainDrivenDesign.Interfaces;
 
-namespace DomainDrivenDesign.DDD.Interfaces
+namespace DomainDrivenDesign.Interfaces
 
 {
     public interface IAggregate

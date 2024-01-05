@@ -1,4 +1,4 @@
-namespace DomainDrivenDesign.DDD
+namespace DomainDrivenDesign
 {
     public abstract class ValueObject
     {

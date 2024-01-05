@@ -1,6 +1,6 @@
 namespace DomainDrivenDesign.DDD
 {
-    using DomainDrivenDesign.DDD.Interfaces;
+    using DomainDrivenDesign.Interfaces;
     using DomainDrivenDesign.Serializer;
     using DomainDrivenDesign.Shared;
     using DomainDrivenDesign.Shared.Interfaces;

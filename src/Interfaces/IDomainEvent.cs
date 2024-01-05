@@ -1,6 +1,6 @@
 using DomainDrivenDesign.Shared.Interfaces;
 
-namespace DomainDrivenDesign.DDD.Interfaces
+namespace DomainDrivenDesign.Interfaces
 {
     public interface IDomainEvent : IEvent
     {
