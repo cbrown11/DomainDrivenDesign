@@ -20,14 +20,20 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # GitHub Packages requires auth; GITHUB_TOKEN cannot read packages from another repo (e.g. Common.Models).
+      # Add repo secret GH_PACKAGES_READ_TOKEN: classic PAT with read:packages (see https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry).
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          source-url: https://nuget.pkg.github.com/cbrown11/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_READ_TOKEN }}
 
       - name: Cache NuGet packages
         uses: actions/cache@v4
