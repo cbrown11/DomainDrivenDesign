@@ -5,8 +5,6 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{85A41F31-073E-4CA2-B214-D404F83590D3}"
 EndProject
-Section
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainDrivenDesign", "src\DomainDrivenDesign.csproj", "{736BC600-E2FD-4B79-A9FA-07241C766C60}"
 EndProject
 Global
