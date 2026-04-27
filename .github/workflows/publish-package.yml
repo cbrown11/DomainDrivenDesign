@@ -74,18 +74,10 @@ jobs:
             -p:Version='${{ steps.gitversion.outputs.NuGetVersion }}' \
             -p:PackageVersion='${{ steps.gitversion.outputs.NuGetVersion }}'
 
-      - name: Add GitHub Packages source
-        run: >
-          dotnet nuget add source
-          "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
-          --name gpr
-          --username ${{ github.repository_owner }}
-          --password ${{ secrets.GITHUB_TOKEN }}
-          --store-password-in-clear-text
-
+      # Do not `dotnet nuget add source` here: the feed URL is already present (repo nuget.config + setup-dotnet), and a second add fails with "already been added".
       - name: Push to GitHub Packages
         run: |
           dotnet nuget push ./artifacts/*.nupkg \
-            --source gpr \
+            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
             --api-key ${{ secrets.GITHUB_TOKEN }} \
             --skip-duplicate
