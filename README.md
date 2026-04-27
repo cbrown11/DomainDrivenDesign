@@ -29,7 +29,9 @@ This repo consumes **`Cbrown11.Common.Models`** from **`https://nuget.pkg.github
 
 Package **NuGet version** is **[GitVersion](https://gitversion.net/)** **`NuGetVersion`** from **[`GitVersion.yml`](GitVersion.yml)** so each **`main`** commit gets a distinct package version. [Publish package](.github/workflows/publish-package.yml) runs GitVersion, then packs and pushes to GitHub Packages.
 
-Triggers: **push to `main`** (auto-publish each commit), push of tag **`v*`**, **Publish GitHub Release**, or **`workflow_dispatch`**. Example tag-only release:
+Triggers: **push to `main`** (auto-publish each commit), push of tag **`v*`**, **Publish GitHub Release**, or **`workflow_dispatch`**. After a successful package push from **`main`**, the workflow creates an annotated git tag **`v{SemVer}`** (GitVersion **`SemVer`**) if that tag does not already exist—so you get a version tag without hand-running `git tag`.
+
+Example manual tag (still valid if you prefer not to wait for CI):
 
 ```bash
 git tag v1.0.1

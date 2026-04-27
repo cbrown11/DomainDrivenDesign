@@ -1,7 +1,7 @@
 name: Publish package
 
 # Pushes Cbrown11.DomainDrivenDesign to GitHub Packages (private to the repo unless you change visibility).
-# Version from GitVersion (GitVersion.yml). Triggers: push to main, tag v*, release published, manual.
+# Version from GitVersion (GitVersion.yml). After a successful push from main, creates tag v{SemVer} if absent. Triggers: push to main, tag v*, release published, manual.
 
 on:
   workflow_dispatch:
@@ -26,7 +26,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - name: Checkout
@@ -83,3 +83,19 @@ jobs:
             --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
             --api-key ${{ secrets.GITHUB_TOKEN }} \
             --skip-duplicate
+
+      # Annotated tag v{SemVer} so history matches GitVersion; only when this run is on branch main (skip tag/release triggers).
+      - name: Tag repository with GitVersion SemVer
+        if: success() && github.ref == 'refs/heads/main'
+        env:
+          SEMVER: ${{ steps.gitversion.outputs.SemVer }}
+        run: |
+          TAG="v${SEMVER}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists; skipping."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "publish: $TAG (GitVersion SemVer)"
+          git push origin "$TAG"
