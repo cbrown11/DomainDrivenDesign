@@ -38,10 +38,22 @@ jobs:
         with:
           useConfigFile: "true"
 
+      - name: Four-part package version (Major.Minor.Patch.CommitsSinceVersionSource)
+        id: pkgver
+        run: |
+          M=$(dotnet-gitversion /showvariable Major)
+          Mi=$(dotnet-gitversion /showvariable Minor)
+          P=$(dotnet-gitversion /showvariable Patch)
+          C=$(dotnet-gitversion /showvariable CommitsSinceVersionSource)
+          VER="${M}.${Mi}.${P}.${C}"
+          echo "version=${VER}" >> "$GITHUB_OUTPUT"
+          echo "PackageVersion (four-part)=${VER}"
+
       - name: Show version
         run: |
           echo "SemVer=${{ steps.gitversion.outputs.SemVer }}"
           echo "FullSemVer=${{ steps.gitversion.outputs.FullSemVer }}"
+          echo "Four-part=${{ steps.pkgver.outputs.version }}"
 
       # setup-dotnet requires NUGET_AUTH_TOKEN whenever source-url is set. Use PAT for GPR; if unset, fall back so the step does not fail (restore still needs the PAT for cross-repo packages).
       # Repo → Settings → Secrets and variables → Actions → New repository secret: GH_PACKAGES_READ_TOKEN (classic PAT: read:packages, +repo if private). https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry
@@ -67,7 +79,7 @@ jobs:
       - name: Build
         run: >
           dotnet build DomainDrivenDesign.sln -c ${{ env.CONFIGURATION }} --no-restore
-          -p:Version="${{ steps.gitversion.outputs.SemVer }}"
+          -p:Version="${{ steps.pkgver.outputs.version }}"
           -p:InformationalVersion="${{ steps.gitversion.outputs.InformationalVersion }}"
 
       - name: Test

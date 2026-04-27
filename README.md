@@ -27,9 +27,9 @@ This repo consumes **`Cbrown11.Common.Models`** from **`https://nuget.pkg.github
 
 ## Publishing this library (GitVersion)
 
-Package **NuGet version** is **[GitVersion](https://gitversion.net/)** **`NuGetVersion`** from **[`GitVersion.yml`](GitVersion.yml)** so each **`main`** commit gets a distinct package version. [Publish package](.github/workflows/publish-package.yml) runs GitVersion, then packs and pushes to GitHub Packages.
+Package **NuGet version** is a **four-part numeric** string **`Major.Minor.Patch.CommitsSinceVersionSource`** (for example **`2.0.3.14`** instead of GitVersion’s default **`2.0.3-ci0014`**). [Publish package](.github/workflows/publish-package.yml) uses **`dotnet-gitversion /showvariable`** for each part, concatenates them, then packs and pushes to GitHub Packages. **[`GitVersion.yml`](GitVersion.yml)** still controls **mode** / **next-version** for how GitVersion picks those segments.
 
-Triggers: **push to `main`** (auto-publish each commit), push of tag **`v*`**, **Publish GitHub Release**, or **`workflow_dispatch`**. After a successful package push from **`main`**, the workflow creates an annotated git tag **`v{SemVer}`** (GitVersion **`SemVer`**) if that tag does not already exist—so you get a version tag without hand-running `git tag`.
+Triggers: **push to `main`** (auto-publish each commit), push of tag **`v*`**, **Publish GitHub Release**, or **`workflow_dispatch`**. After a successful package push from **`main`**, the workflow creates an annotated git tag **`v{Major.Minor.Patch.Commits}`** if that tag does not already exist (same value as the package version).
 
 Example manual tag (still valid if you prefer not to wait for CI):
 
