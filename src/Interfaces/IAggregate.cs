@@ -9,6 +9,8 @@ namespace DomainDrivenDesign.Interfaces
 
         string AggregateId { get; }
 
+        string Name { get; }
+
         void ApplyEvent(IDomainEvent @event);
 
         IEnumerable<IDomainEvent> UncommitedEvents();

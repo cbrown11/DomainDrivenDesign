@@ -1,4 +1,6 @@
-using DomainDrivenDesign.Shared.Interfaces;
+
+using Common.Models.AuditInfo;
+using Common.Models.Messages;
 
 namespace DomainDrivenDesign.Interfaces
 {

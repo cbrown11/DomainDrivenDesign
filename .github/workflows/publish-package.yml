@@ -1,0 +1,82 @@
+name: Publish package
+
+# Pushes Cbrown11.DomainDrivenDesign to GitHub Packages (private to the repo unless you change visibility).
+# Triggers: manual, GitHub Release published, or push of a version tag (v*).
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: publish-package
+  cancel-in-progress: false
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  CONFIGURATION: Release
+  PACKAGE_PROJECT: src/DomainDrivenDesign/DomainDrivenDesign.csproj
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore DomainDrivenDesign.sln --configfile nuget.config
+
+      - name: Build
+        run: dotnet build DomainDrivenDesign.sln -c ${{ env.CONFIGURATION }} --no-restore
+
+      - name: Test
+        run: dotnet test DomainDrivenDesign.sln -c ${{ env.CONFIGURATION }} --no-build --verbosity normal
+
+      - name: Resolve package version from tag or release
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            echo "PACKAGE_VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_ENV"
+          elif [[ "${{ github.event_name }}" == "release" ]]; then
+            TAG="${{ github.event.release.tag_name }}"
+            echo "PACKAGE_VERSION=${TAG#v}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Pack
+        shell: bash
+        run: |
+          out="${{ github.workspace }}/artifacts"
+          if [[ -n "${PACKAGE_VERSION:-}" ]]; then
+            dotnet pack ${{ env.PACKAGE_PROJECT }} -c ${{ env.CONFIGURATION }} --no-build -o "$out" \
+              -p:Version="$PACKAGE_VERSION" -p:PackageVersion="$PACKAGE_VERSION"
+          else
+            dotnet pack ${{ env.PACKAGE_PROJECT }} -c ${{ env.CONFIGURATION }} --no-build -o "$out"
+          fi
+
+      - name: Add GitHub Packages source
+        run: >
+          dotnet nuget add source
+          "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          --name gpr
+          --username ${{ github.repository_owner }}
+          --password ${{ secrets.GITHUB_TOKEN }}
+          --store-password-in-clear-text
+
+      - name: Push to GitHub Packages
+        run: |
+          dotnet nuget push ./artifacts/*.nupkg \
+            --source gpr \
+            --api-key ${{ secrets.GITHUB_TOKEN }} \
+            --skip-duplicate

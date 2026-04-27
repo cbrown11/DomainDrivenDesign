@@ -6,6 +6,7 @@ namespace DomainDrivenDesign
 
     public abstract class AggregateRoot : IAggregate
     {
+        public abstract string Name { get; }
         public abstract string AggregateId { get; }
 
         public int Version

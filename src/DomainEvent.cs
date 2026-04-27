@@ -1,9 +1,9 @@
 namespace DomainDrivenDesign
 {
+    using Common.Models.AuditInfo;
+    using Common.Models.Serializer;
     using DomainDrivenDesign.Interfaces;
-    using DomainDrivenDesign.Serializer;
-    using DomainDrivenDesign.Shared;
-    using DomainDrivenDesign.Shared.Interfaces;
+
 
     using Newtonsoft.Json;
 
