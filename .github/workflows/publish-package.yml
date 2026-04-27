@@ -1,13 +1,15 @@
 name: Publish package
 
 # Pushes Cbrown11.DomainDrivenDesign to GitHub Packages (private to the repo unless you change visibility).
-# Version comes from GitVersion (tags, branches, GitVersion.yml). Triggers: manual, GitHub Release published, or push of a version tag (v*).
+# Version from GitVersion (ContinuousDeployment + next-version gives a unique NuGet-safe version per main commit). Triggers: push to main, tag v*, release published, manual.
 
 on:
   workflow_dispatch:
   release:
     types: [published]
   push:
+    branches:
+      - main
     tags:
       - "v*"
 
@@ -44,6 +46,7 @@ jobs:
       - name: Show version
         run: |
           echo "SemVer: ${{ steps.gitversion.outputs.SemVer }}"
+          echo "NuGetVersion: ${{ steps.gitversion.outputs.NuGetVersion }}"
           echo "FullSemVer: ${{ steps.gitversion.outputs.FullSemVer }}"
 
       - name: Setup .NET
@@ -68,8 +71,8 @@ jobs:
         run: |
           out="${{ github.workspace }}/artifacts"
           dotnet pack ${{ env.PACKAGE_PROJECT }} -c ${{ env.CONFIGURATION }} --no-build -o "$out" \
-            -p:Version='${{ steps.gitversion.outputs.SemVer }}' \
-            -p:PackageVersion='${{ steps.gitversion.outputs.SemVer }}'
+            -p:Version='${{ steps.gitversion.outputs.NuGetVersion }}' \
+            -p:PackageVersion='${{ steps.gitversion.outputs.NuGetVersion }}'
 
       - name: Add GitHub Packages source
         run: >

@@ -11,7 +11,9 @@ Reference: This is a re-implementation of Greg Young's [SimpleCQRS](https://gith
 
 ## CI: auto-build with GitVersion
 
-Pushes and pull requests to **`main`** automatically run **[`ci.yml`](.github/workflows/ci.yml)** (build + test). The workflow checks out **full history** (`fetch-depth: 0`), runs **GitVersion**, then **`dotnet build`** with **`-p:Version`** = **`SemVer`** and **`-p:InformationalVersion`** from GitVersion so the built assembly carries that version. Rules and the **`next-version`** baseline live in **[`GitVersion.yml`](GitVersion.yml)** (including **`workflow: GitHubActions`** for cleaner behavior in Actions). That is **build-only**; it does not publish a NuGet package. Publishing still uses **[`publish-package.yml`](.github/workflows/publish-package.yml)** (tags, release, or manual).
+Pushes and pull requests to **`main`** automatically run **[`ci.yml`](.github/workflows/ci.yml)** (build + test). The workflow checks out **full history** (`fetch-depth: 0`), runs **GitVersion**, then **`dotnet build`** with **`-p:Version`** = **`SemVer`** and **`-p:InformationalVersion`** from GitVersion. Rules live in **[`GitVersion.yml`](GitVersion.yml)** (**`workflow: GitHubActions`**, **`mode: ContinuousDeployment`**, **`next-version`**).
+
+Every push to **`main`** also runs **[`publish-package.yml`](.github/workflows/publish-package.yml)**, which packs with **`NuGetVersion`** (NuGet-safe) and pushes to **GitHub Packages** (plus tag **`v*`**, **release published**, and **workflow_dispatch**).
 
 ## NuGet: `Cbrown11.Common.Models` (GitHub Packages)
 
@@ -23,11 +25,11 @@ This repo consumes **`Cbrown11.Common.Models`** from **`https://nuget.pkg.github
 
 - **GitHub Actions:** add a repository secret **`GH_PACKAGES_READ_TOKEN`** (same classic PAT as local: **`read:packages`**, plus **`repo`** if the package or **Common.Models** is private): in the **DomainDrivenDesign** repo go to **Settings → Secrets and variables → Actions → New repository secret**, name `GH_PACKAGES_READ_TOKEN`, value = the PAT. Workflows pass `NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}` to `actions/setup-dotnet` so the step always has a token; **`GITHUB_TOKEN` alone cannot restore** packages published from another repo, so without the PAT secret, restore will still fail after setup.
 
-## Publishing this library (GitVersion + tags)
+## Publishing this library (GitVersion)
 
-Package **NuGet version** is computed by **[GitVersion](https://gitversion.net/)** using git history and [`GitVersion.yml`](GitVersion.yml) (`next-version` baseline). [Publish package](.github/workflows/publish-package.yml) runs GitVersion, then packs with `-p:Version` / `-p:PackageVersion` set to **`SemVer`**.
+Package **NuGet version** is **[GitVersion](https://gitversion.net/)** **`NuGetVersion`** (from [`GitVersion.yml`](GitVersion.yml): **ContinuousDeployment** + **`next-version`** so each **`main`** commit gets a distinct package version). [Publish package](.github/workflows/publish-package.yml) runs GitVersion, then packs and pushes to GitHub Packages.
 
-Triggers: push of tag `v*`, **Publish GitHub Release**, or **workflow_dispatch**. Example tag push:
+Triggers: **push to `main`** (auto-publish each commit), push of tag **`v*`**, **Publish GitHub Release**, or **`workflow_dispatch`**. Example tag-only release:
 
 ```bash
 git tag v1.0.1
