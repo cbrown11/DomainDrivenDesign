@@ -1,0 +1,5 @@
+# ContinuousDeployment: each commit on main gets a new NuGet-safe version (NuGetVersion). Tags/releases still work.
+# https://gitversion.net/docs/reference/modes/continuous-deployment
+workflow: GitHubActions
+mode: ContinuousDeployment
+next-version: 1.0.3
