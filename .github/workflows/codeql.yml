@@ -38,7 +38,7 @@ jobs:
 
       - name: Restore and build
         run: |
-          dotnet restore DomainDrivenDesign.sln --configfile nuget.config
+          dotnet restore DomainDrivenDesign.sln
           dotnet build DomainDrivenDesign.sln -c Release --no-restore
 
       - name: Perform CodeQL Analysis

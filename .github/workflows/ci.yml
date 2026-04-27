@@ -44,7 +44,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore
-        run: dotnet restore DomainDrivenDesign.sln --configfile nuget.config
+        run: dotnet restore DomainDrivenDesign.sln
 
       - name: Build
         run: dotnet build DomainDrivenDesign.sln -c ${{ env.CONFIGURATION }} --no-restore

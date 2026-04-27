@@ -39,7 +39,7 @@ jobs:
           NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Restore
-        run: dotnet restore DomainDrivenDesign.sln --configfile nuget.config
+        run: dotnet restore DomainDrivenDesign.sln
 
       - name: Build
         run: dotnet build DomainDrivenDesign.sln -c ${{ env.CONFIGURATION }} --no-restore
