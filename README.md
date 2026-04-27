@@ -11,7 +11,7 @@ Reference: This is a re-implementation of Greg Young's [SimpleCQRS](https://gith
 
 ## CI: auto-build with GitVersion
 
-Pushes and pull requests to **`main`** automatically run **[`ci.yml`](.github/workflows/ci.yml)** (build + test). The workflow checks out **full history** (`fetch-depth: 0`), runs **GitVersion**, then **`dotnet build`** with **`-p:Version`** = **`SemVer`** and **`-p:InformationalVersion`** from GitVersion. Rules live in **[`GitVersion.yml`](GitVersion.yml)** (**`workflow: GitHubActions`**, **`mode: ContinuousDeployment`**, **`next-version`**).
+Pushes and pull requests to **`main`** automatically run **[`ci.yml`](.github/workflows/ci.yml)** (build + test). The workflow checks out **full history** (`fetch-depth: 0`), runs **GitVersion** using **[`GitVersion.yml`](GitVersion.yml)** (**`mode`**, **`next-version`**), then **`dotnet build`** with **`-p:Version`** = **`SemVer`** and **`-p:InformationalVersion`** from GitVersion. Install [GitVersion](https://gitversion.net/docs/usage/cli/installation) locally to get the same numbers from the same file.
 
 Every push to **`main`** also runs **[`publish-package.yml`](.github/workflows/publish-package.yml)**, which packs with **`NuGetVersion`** (NuGet-safe) and pushes to **GitHub Packages** (plus tag **`v*`**, **release published**, and **workflow_dispatch**).
 
@@ -27,7 +27,7 @@ This repo consumes **`Cbrown11.Common.Models`** from **`https://nuget.pkg.github
 
 ## Publishing this library (GitVersion)
 
-Package **NuGet version** is **[GitVersion](https://gitversion.net/)** **`NuGetVersion`** (from [`GitVersion.yml`](GitVersion.yml): **ContinuousDeployment** + **`next-version`** so each **`main`** commit gets a distinct package version). [Publish package](.github/workflows/publish-package.yml) runs GitVersion, then packs and pushes to GitHub Packages.
+Package **NuGet version** is **[GitVersion](https://gitversion.net/)** **`NuGetVersion`** from **[`GitVersion.yml`](GitVersion.yml)** so each **`main`** commit gets a distinct package version. [Publish package](.github/workflows/publish-package.yml) runs GitVersion, then packs and pushes to GitHub Packages.
 
 Triggers: **push to `main`** (auto-publish each commit), push of tag **`v*`**, **Publish GitHub Release**, or **`workflow_dispatch`**. Example tag-only release:
 

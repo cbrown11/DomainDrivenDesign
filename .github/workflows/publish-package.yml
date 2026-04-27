@@ -1,7 +1,7 @@
 name: Publish package
 
 # Pushes Cbrown11.DomainDrivenDesign to GitHub Packages (private to the repo unless you change visibility).
-# Version from GitVersion (ContinuousDeployment + next-version gives a unique NuGet-safe version per main commit). Triggers: push to main, tag v*, release published, manual.
+# Version from GitVersion (GitVersion.yml). Triggers: push to main, tag v*, release published, manual.
 
 on:
   workflow_dispatch:
@@ -42,6 +42,8 @@ jobs:
       - name: GitVersion
         uses: gittools/actions/gitversion/execute@v0.9.7
         id: gitversion
+        with:
+          useConfigFile: "true"
 
       - name: Show version
         run: |

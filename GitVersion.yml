@@ -1,5 +1,4 @@
-# ContinuousDeployment: each commit on main gets a new NuGet-safe version (NuGetVersion). Tags/releases still work.
-# https://gitversion.net/docs/reference/modes/continuous-deployment
-workflow: GitHubActions
+# https://gitversion.net/docs/reference/configuration
+# Do not add `workflow:` here — not supported in GitVersion 5.x GitVersion.yml (GitHub Actions is auto-detected).
 mode: ContinuousDeployment
 next-version: 1.0.3

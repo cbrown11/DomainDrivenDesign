@@ -35,6 +35,8 @@ jobs:
       - name: GitVersion
         uses: gittools/actions/gitversion/execute@v0.9.7
         id: gitversion
+        with:
+          useConfigFile: "true"
 
       - name: Show version
         run: |
