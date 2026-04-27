@@ -9,33 +9,5 @@ So this library gives a template to implement a DDD pattern using the Event Sour
 
 Reference: This is a re-implementation of Greg Young's [SimpleCQRS](https://github.com/gregoryyoung/m-r) project, arguably the de-facto sample application for CQRS, DDD & Event Sourcing.
 
-## CI: auto-build with GitVersion
 
-Pushes and pull requests to **`main`** automatically run **[`ci.yml`](.github/workflows/ci.yml)** (build + test). The workflow checks out **full history** (`fetch-depth: 0`), runs **GitVersion** using **[`GitVersion.yml`](GitVersion.yml)** (**`mode`**, **`next-version`**), then **`dotnet build`** with **`-p:Version`** = **`SemVer`** and **`-p:InformationalVersion`** from GitVersion. Install [GitVersion](https://gitversion.net/docs/usage/cli/installation) locally to get the same numbers from the same file.
 
-Every push to **`main`** also runs **[`publish-package.yml`](.github/workflows/publish-package.yml)**, which packs with **`NuGetVersion`** (NuGet-safe) and pushes to **GitHub Packages** (plus tag **`v*`**, **release published**, and **workflow_dispatch**).
-
-## NuGet: `Cbrown11.Common.Models` (GitHub Packages)
-
-This repo consumes **`Cbrown11.Common.Models`** from **`https://nuget.pkg.github.com/cbrown11/index.json`** (see `nuget.config`). That feed is not anonymous: restores must be authenticated.
-
-- **Locally:** use a GitHub [personal access token](https://github.com/settings/tokens) with **`read:packages`** (and **`repo`** if the package or source repo is private), then configure NuGet for the `github-cbrown11` source (for example `dotnet nuget update source github-cbrown11 --username cbrown11 --password <PAT> --store-password-in-clear-text`). Details: [Working with the NuGet registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry).
-
-  Do **not** use `--configfile` with restore for this repo: it tells NuGet to use **only** that file, so credentials are ignored—**GitHub Packages returns 401** locally (PAT in user config) and in **Actions** (credentials from `setup-dotnet`). From the repo root run `dotnet restore DomainDrivenDesign.sln`, or under `src` run `dotnet restore`, so the repo `nuget.config` is merged with credentials. CI workflows use the same pattern (no `--configfile` on restore).
-
-- **GitHub Actions:** add a repository secret **`GH_PACKAGES_READ_TOKEN`** (same classic PAT as local: **`read:packages`**, plus **`repo`** if the package or **Common.Models** is private): in the **DomainDrivenDesign** repo go to **Settings → Secrets and variables → Actions → New repository secret**, name `GH_PACKAGES_READ_TOKEN`, value = the PAT. Workflows pass `NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}` to `actions/setup-dotnet` so the step always has a token; **`GITHUB_TOKEN` alone cannot restore** packages published from another repo, so without the PAT secret, restore will still fail after setup.
-
-## Publishing this library (GitVersion)
-
-Package **NuGet version** is a **four-part numeric** string **`Major.Minor.Patch.CommitsSinceVersionSource`** (for example **`2.0.3.14`** instead of GitVersion’s default **`2.0.3-ci0014`**). [Publish package](.github/workflows/publish-package.yml) uses **`dotnet-gitversion /showvariable`** for each part, concatenates them, then packs and pushes to GitHub Packages. **[`GitVersion.yml`](GitVersion.yml)** still controls **mode** / **next-version** for how GitVersion picks those segments.
-
-Triggers: **push to `main`** (auto-publish each commit), push of tag **`v*`**, **Publish GitHub Release**, or **`workflow_dispatch`**. After a successful package push from **`main`**, the workflow creates an annotated git tag **`v{Major.Minor.Patch.Commits}`** if that tag does not already exist (same value as the package version).
-
-Example manual tag (still valid if you prefer not to wait for CI):
-
-```bash
-git tag v1.0.1
-git push origin v1.0.1
-```
-
-CI ([`ci.yml`](.github/workflows/ci.yml)) also runs GitVersion (with full `fetch-depth: 0`) and prints **`SemVer`** / **`FullSemVer`** in the log for traceability.
