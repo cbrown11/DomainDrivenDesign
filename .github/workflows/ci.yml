@@ -63,7 +63,10 @@ jobs:
         run: dotnet restore DomainDrivenDesign.sln
 
       - name: Build
-        run: dotnet build DomainDrivenDesign.sln -c ${{ env.CONFIGURATION }} --no-restore
+        run: >
+          dotnet build DomainDrivenDesign.sln -c ${{ env.CONFIGURATION }} --no-restore
+          -p:Version="${{ steps.gitversion.outputs.SemVer }}"
+          -p:InformationalVersion="${{ steps.gitversion.outputs.InformationalVersion }}"
 
       - name: Test
         run: |

@@ -9,6 +9,10 @@ So this library gives a template to implement a DDD pattern using the Event Sour
 
 Reference: This is a re-implementation of Greg Young's [SimpleCQRS](https://github.com/gregoryyoung/m-r) project, arguably the de-facto sample application for CQRS, DDD & Event Sourcing.
 
+## CI: auto-build with GitVersion
+
+Pushes and pull requests to **`main`** automatically run **[`ci.yml`](.github/workflows/ci.yml)** (build + test). The workflow checks out **full history** (`fetch-depth: 0`), runs **GitVersion**, then **`dotnet build`** with **`-p:Version`** = **`SemVer`** and **`-p:InformationalVersion`** from GitVersion so the built assembly carries that version. Rules and the **`next-version`** baseline live in **[`GitVersion.yml`](GitVersion.yml)** (including **`workflow: GitHubActions`** for cleaner behavior in Actions). That is **build-only**; it does not publish a NuGet package. Publishing still uses **[`publish-package.yml`](.github/workflows/publish-package.yml)** (tags, release, or manual).
+
 ## NuGet: `Cbrown11.Common.Models` (GitHub Packages)
 
 This repo consumes **`Cbrown11.Common.Models`** from **`https://nuget.pkg.github.com/cbrown11/index.json`** (see `nuget.config`). That feed is not anonymous: restores must be authenticated.
