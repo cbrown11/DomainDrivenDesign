@@ -1,7 +1,7 @@
 name: Publish package
 
 # Pushes Cbrown11.DomainDrivenDesign to GitHub Packages (private to the repo unless you change visibility).
-# Triggers: manual, GitHub Release published, or push of a version tag (v*).
+# Version comes from GitVersion (tags, branches, GitVersion.yml). Triggers: manual, GitHub Release published, or push of a version tag (v*).
 
 on:
   workflow_dispatch:
@@ -29,6 +29,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: 5.x
+
+      - name: GitVersion
+        uses: gittools/actions/gitversion/execute@v0.9.7
+        id: gitversion
+
+      - name: Show version
+        run: |
+          echo "SemVer: ${{ steps.gitversion.outputs.SemVer }}"
+          echo "FullSemVer: ${{ steps.gitversion.outputs.FullSemVer }}"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -47,26 +63,13 @@ jobs:
       - name: Test
         run: dotnet test DomainDrivenDesign.sln -c ${{ env.CONFIGURATION }} --no-build --verbosity normal
 
-      - name: Resolve package version from tag or release
-        shell: bash
-        run: |
-          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-            echo "PACKAGE_VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_ENV"
-          elif [[ "${{ github.event_name }}" == "release" ]]; then
-            TAG="${{ github.event.release.tag_name }}"
-            echo "PACKAGE_VERSION=${TAG#v}" >> "$GITHUB_ENV"
-          fi
-
       - name: Pack
         shell: bash
         run: |
           out="${{ github.workspace }}/artifacts"
-          if [[ -n "${PACKAGE_VERSION:-}" ]]; then
-            dotnet pack ${{ env.PACKAGE_PROJECT }} -c ${{ env.CONFIGURATION }} --no-build -o "$out" \
-              -p:Version="$PACKAGE_VERSION" -p:PackageVersion="$PACKAGE_VERSION"
-          else
-            dotnet pack ${{ env.PACKAGE_PROJECT }} -c ${{ env.CONFIGURATION }} --no-build -o "$out"
-          fi
+          dotnet pack ${{ env.PACKAGE_PROJECT }} -c ${{ env.CONFIGURATION }} --no-build -o "$out" \
+            -p:Version='${{ steps.gitversion.outputs.SemVer }}' \
+            -p:PackageVersion='${{ steps.gitversion.outputs.SemVer }}'
 
       - name: Add GitHub Packages source
         run: >

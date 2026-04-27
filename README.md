@@ -19,11 +19,15 @@ This repo consumes **`Cbrown11.Common.Models`** from **`https://nuget.pkg.github
 
 - **GitHub Actions:** add a repository secret **`GH_PACKAGES_READ_TOKEN`** (same classic PAT as local: **`read:packages`**, plus **`repo`** if the package or **Common.Models** is private): in the **DomainDrivenDesign** repo go to **Settings → Secrets and variables → Actions → New repository secret**, name `GH_PACKAGES_READ_TOKEN`, value = the PAT. Workflows pass `NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}` to `actions/setup-dotnet` so the step always has a token; **`GITHUB_TOKEN` alone cannot restore** packages published from another repo, so without the PAT secret, restore will still fail after setup.
 
-## Publishing this library (Git tag)
+## Publishing this library (GitVersion + tags)
 
-The [Publish package](.github/workflows/publish-package.yml) workflow runs when a tag matching `v*` is pushed. Example for version **1.0.1**:
+Package **NuGet version** is computed by **[GitVersion](https://gitversion.net/)** using git history and [`GitVersion.yml`](GitVersion.yml) (`next-version` baseline). [Publish package](.github/workflows/publish-package.yml) runs GitVersion, then packs with `-p:Version` / `-p:PackageVersion` set to **`SemVer`**.
+
+Triggers: push of tag `v*`, **Publish GitHub Release**, or **workflow_dispatch**. Example tag push:
 
 ```bash
 git tag v1.0.1
 git push origin v1.0.1
 ```
+
+CI ([`ci.yml`](.github/workflows/ci.yml)) also runs GitVersion (with full `fetch-depth: 0`) and prints **`SemVer`** / **`FullSemVer`** in the log for traceability.

@@ -24,6 +24,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: 5.x
+
+      - name: GitVersion
+        uses: gittools/actions/gitversion/execute@v0.9.7
+        id: gitversion
+
+      - name: Show version
+        run: |
+          echo "SemVer=${{ steps.gitversion.outputs.SemVer }}"
+          echo "FullSemVer=${{ steps.gitversion.outputs.FullSemVer }}"
 
       # setup-dotnet requires NUGET_AUTH_TOKEN whenever source-url is set. Use PAT for GPR; if unset, fall back so the step does not fail (restore still needs the PAT for cross-repo packages).
       # Repo → Settings → Secrets and variables → Actions → New repository secret: GH_PACKAGES_READ_TOKEN (classic PAT: read:packages, +repo if private). https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry
