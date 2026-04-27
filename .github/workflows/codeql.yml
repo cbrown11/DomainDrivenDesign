@@ -28,7 +28,7 @@ jobs:
           dotnet-version: "10.0.x"
           source-url: https://nuget.pkg.github.com/cbrown11/index.json
         env:
-          NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_READ_TOKEN }}
+          NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3

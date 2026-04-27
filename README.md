@@ -17,7 +17,7 @@ This repo consumes **`Cbrown11.Common.Models`** from **`https://nuget.pkg.github
 
   Do **not** use `dotnet restore --configfile ..\nuget.config` for everyday local restores: `--configfile` tells NuGet to use **only** that file, so your PAT in `%AppData%\NuGet\NuGet.Config` is ignored and GitHub Packages returns **401**. From the repo root, run `dotnet restore DomainDrivenDesign.sln` (or `dotnet restore` under `src` **without** `--configfile`) so the repo `nuget.config` is merged with your user config and credentials apply.
 
-- **GitHub Actions:** the default `GITHUB_TOKEN` cannot read packages published from another repository. CI uses repository secret **`GH_PACKAGES_READ_TOKEN`** (same PAT scope) with `actions/setup-dotnet` `source-url` / `NUGET_AUTH_TOKEN` in the workflows.
+- **GitHub Actions:** add a repository secret **`GH_PACKAGES_READ_TOKEN`** (same classic PAT as local: **`read:packages`**, plus **`repo`** if the package or **Common.Models** is private): in the **DomainDrivenDesign** repo go to **Settings → Secrets and variables → Actions → New repository secret**, name `GH_PACKAGES_READ_TOKEN`, value = the PAT. Workflows pass `NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}` to `actions/setup-dotnet` so the step always has a token; **`GITHUB_TOKEN` alone cannot restore** packages published from another repo, so without the PAT secret, restore will still fail after setup.
 
 ## Publishing this library (Git tag)
 
